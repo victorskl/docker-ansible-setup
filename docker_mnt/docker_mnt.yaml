@@ -1,0 +1,28 @@
+- hosts: dockers
+
+  vars:
+    install_base: mnt
+    docker_data_dir: docker
+
+  tasks:
+    - name: Upload daemon.json config
+      copy:
+        src: ./daemon.json
+        dest: /etc/docker/daemon.json
+
+    - name: Create docker data directory
+      file:
+        path: /{{install_base}}/{{docker_data_dir}}
+        state: directory
+
+    - name: Reload docker service
+      systemd:
+        daemon-reload: yes
+        name: docker
+        state: restarted
+
+    - name: Confirm docker data directory
+      shell: 'docker info|grep "Docker Root Dir"'
+
+    - name: Confirm docker overlay driver
+      shell: 'docker info|grep "Storage Driver"'

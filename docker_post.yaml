@@ -1,0 +1,19 @@
+- hosts: dockers
+
+  vars:
+    na: na
+
+  tasks:
+    - name: Upload daemon.json config
+      copy:
+        src: ./daemon.json
+        dest: /etc/docker/daemon.json
+
+    - name: Reload docker service
+      systemd:
+        daemon-reload: yes
+        name: docker
+        state: restarted
+
+    - name: Confirm docker overlay driver
+      shell: 'docker info|grep "Storage Driver"'

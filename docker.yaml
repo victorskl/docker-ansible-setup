@@ -1,0 +1,45 @@
+- hosts: dockers
+  gather_facts: False
+
+  vars:
+    docker_ver: 17.06.0~ce-0~ubuntu
+
+  tasks:
+
+    - name: Install Minimal Python
+      raw: test -e /usr/bin/python || (apt -y update && apt install -y python-minimal)
+
+    - name: Install packages to allow apt to use a repository over HTTPS
+      apt:
+        name: 
+          - apt-transport-https
+          - ca-certificates
+          - curl
+          - software-properties-common
+        state: latest
+        install_recommends: no
+
+    - name: Add Docker’s official GPG key
+      shell: "curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -"
+
+    - name: Verify that the key fingerprint
+      shell: "apt-key fingerprint 0EBFCD88"
+
+    - name: Set up the Docker stable repository
+      shell: 'add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"'
+
+    - name: apt-get update
+      apt:
+        update_cache: yes
+
+    - name: Install Docker-CE
+      shell: 'apt-get -y install docker-ce="{{docker_ver}}"'
+
+    - name: Install docker-compose
+      shell: "curl -L https://github.com/docker/compose/releases/download/1.14.0/docker-compose-`uname -s`-`uname -m` > /usr/local/bin/docker-compose"
+
+    - name: chmod docker-compose
+      shell: "chmod +x /usr/local/bin/docker-compose"
+
+#    - name: Verify that Docker CE is installed correctly by running the hello-world image
+#      shell: "docker run hello-world"

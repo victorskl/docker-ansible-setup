@@ -1,0 +1,4 @@
+- hosts: dockers
+  tasks:
+    - name: Test
+      shell: echo hello

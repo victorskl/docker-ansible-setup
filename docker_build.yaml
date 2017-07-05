@@ -1,0 +1,14 @@
+- hosts: dockers
+
+  vars:
+    build_dir: /home/ubuntu/mydk
+    dockerfile: Dockerfile
+
+  tasks:
+    - name: Upload Dockerfile
+      copy:
+        src: ./{{dockerfile}}
+        dest: "{{build_dir}}/{{dockerfile}}"
+
+    - name: Build
+      shell: chdir={{build_dir}} docker build . > build.log
